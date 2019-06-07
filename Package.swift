@@ -20,10 +20,10 @@ import Foundation
 var packageDependencies: [Package.Dependency] = [
   // Official SwiftProtobuf library, for [de]serializing data to send on the wire.
   .package(url: "https://github.com/apple/swift-protobuf.git", .upToNextMajor(from: "1.5.0")),
-  
+
   // Command line argument parser for our auxiliary command line tools.
   .package(url: "https://github.com/kylef/Commander.git", .upToNextMinor(from: "0.8.0")),
-  
+
   // SwiftGRPCNIO dependencies:
   // Transitive dependencies
   .package(url: "https://github.com/apple/swift-nio-zlib-support.git", .upToNextMajor(from: "1.0.0")),
@@ -56,7 +56,7 @@ let package = Package(
   name: "SwiftGRPC",
   products: [
     .library(name: "SwiftGRPC", targets: ["SwiftGRPC"]),
-    .library(name: "SwiftGRPCNIO", targets: ["SwiftGRPCNIO"]),
+    .library(name: "SwiftGRPCNIO", targets: ["SwiftGRPCNIO"])
   ],
   dependencies: packageDependencies,
   targets: [
