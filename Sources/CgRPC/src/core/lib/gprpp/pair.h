@@ -16,20 +16,23 @@
  *
  */
 
-#ifndef GRPC_CORE_LIB_GPRPP_ATOMIC_WITH_STD_H
-#define GRPC_CORE_LIB_GPRPP_ATOMIC_WITH_STD_H
+#ifndef GRPC_CORE_LIB_GPRPP_PAIR_H
+#define GRPC_CORE_LIB_GPRPP_PAIR_H
 
 #include <grpc/support/port_platform.h>
 
-#include <atomic>
+#include <utility>
 
 namespace grpc_core {
+template <class T1, class T2>
+using Pair = std::pair<T1, T2>;
 
-template <class T>
-using atomic = std::atomic<T>;
-
-typedef std::memory_order memory_order;
-
+template <class T1, class T2>
+inline Pair<typename std::decay<T1>::type, typename std::decay<T2>::type>
+MakePair(T1&& u, T2&& v) {
+  typedef typename std::decay<T1>::type V1;
+  typedef typename std::decay<T2>::type V2;
+  return Pair<V1, V2>(std::forward<T1>(u), std::forward<T2>(v));
+}
 }  // namespace grpc_core
-
-#endif /* GRPC_CORE_LIB_GPRPP_ATOMIC_WITH_STD_H */
+#endif /* GRPC_CORE_LIB_GPRPP_PAIR_H */
