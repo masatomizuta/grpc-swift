@@ -67,6 +67,7 @@ done
 
 echo "ADDING additional compiler flags to nanopb/pb.h"
 perl -pi -e 's/\/\* #define PB_FIELD_16BIT 1 \*\//#define PB_FIELD_16BIT 1/' $DSTROOT/CgRPC/third_party/nanopb/pb.h
+perl -pi -e 's/\/\* #define PB_NO_PACKED_STRUCTS 1 \*\//#define PB_NO_PACKED_STRUCTS 1/' $DSTROOT/CgRPC/third_party/nanopb/pb.h
 
 echo "MOVING nanopb headers to CgRPC/include"
 mv $DSTROOT/CgRPC/third_party/nanopb/*.h $DSTROOT/CgRPC/include/
