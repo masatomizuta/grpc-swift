@@ -71,12 +71,15 @@ perl -pi -e 's/\/\* #define PB_FIELD_16BIT 1 \*\//#define PB_FIELD_16BIT 1/' $DS
 echo "MOVING nanopb headers to CgRPC/include"
 mv $DSTROOT/CgRPC/third_party/nanopb/*.h $DSTROOT/CgRPC/include/
 
-echo "ADDING additional compiler flags to tsi/ssl_transport_security.cc"
-perl -pi -e 's/#define TSI_OPENSSL_ALPN_SUPPORT 1/#define TSI_OPENSSL_ALPN_SUPPORT 0/' $DSTROOT/CgRPC/src/core/tsi/ssl_transport_security.cc
+# echo "ADDING additional compiler flags to tsi/ssl_transport_security.cc"
+# perl -pi -e 's/#define TSI_OPENSSL_ALPN_SUPPORT 1/#define TSI_OPENSSL_ALPN_SUPPORT 0/' $DSTROOT/CgRPC/src/core/tsi/ssl_transport_security.cc
 
 echo "DISABLING ARES"
 perl -pi -e 's/#define GRPC_ARES 1/#define GRPC_ARES 0/' $DSTROOT/CgRPC/include/grpc/impl/codegen/port_platform.h
 
 echo "COPYING roots.pem"
-echo "Please run 'swift run RootsEncoder > Sources/SwiftGRPC/Core/Roots.swift' to import the updated certificates." 
+echo "Please run 'swift run RootsEncoder > Sources/SwiftGRPC/Core/Roots.swift' to import the updated certificates."
 cp $TMP_DIR/grpc/etc/roots.pem $DSTASSETS/roots.pem
+
+cd ..
+swift run RootsEncoder > Sources/SwiftGRPC/Core/Roots.swift
