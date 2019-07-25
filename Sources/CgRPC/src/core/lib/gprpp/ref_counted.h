@@ -44,7 +44,7 @@ class PolymorphicRefCount {
   GRPC_ABSTRACT_BASE_CLASS
 
  protected:
-  GPRC_ALLOW_CLASS_TO_USE_NON_PUBLIC_DELETE
+  GRPC_ALLOW_CLASS_TO_USE_NON_PUBLIC_DELETE
 
   virtual ~PolymorphicRefCount() = default;
 };
@@ -57,7 +57,7 @@ class NonPolymorphicRefCount {
   GRPC_ABSTRACT_BASE_CLASS
 
  protected:
-  GPRC_ALLOW_CLASS_TO_USE_NON_PUBLIC_DELETE
+  GRPC_ALLOW_CLASS_TO_USE_NON_PUBLIC_DELETE
 
   ~NonPolymorphicRefCount() = default;
 };
@@ -180,7 +180,7 @@ class RefCount {
 // So, use NonPolymorphicRefCount only when both of the following conditions
 // are guaranteed to hold:
 // (a) Child is a concrete leaf class in RefCounted<Child>, and
-// (b) you are gauranteed to call Unref only on concrete leaf classes and not
+// (b) you are guaranteed to call Unref only on concrete leaf classes and not
 //     their parents.
 //
 // The following example is illegal, because calling Unref() will not call
@@ -221,6 +221,11 @@ class RefCounted : public Impl {
     }
   }
 
+  bool RefIfNonZero() { return refs_.RefIfNonZero(); }
+  bool RefIfNonZero(const DebugLocation& location, const char* reason) {
+    return refs_.RefIfNonZero(location, reason);
+  }
+
   // Not copyable nor movable.
   RefCounted(const RefCounted&) = delete;
   RefCounted& operator=(const RefCounted&) = delete;
@@ -228,7 +233,7 @@ class RefCounted : public Impl {
   GRPC_ABSTRACT_BASE_CLASS
 
  protected:
-  GPRC_ALLOW_CLASS_TO_USE_NON_PUBLIC_DELETE
+  GRPC_ALLOW_CLASS_TO_USE_NON_PUBLIC_DELETE
 
   // TraceFlagT is defined to accept both DebugOnlyTraceFlag and TraceFlag.
   // Note: RefCount tracing is only enabled on debug builds, even when a
