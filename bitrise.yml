@@ -1,0 +1,47 @@
+---
+format_version: '6'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: ios
+
+workflows:
+  deploy:
+    steps:
+    - script:
+        deps:
+          brew:
+          - name: hub
+            bin_name: hub
+        inputs:
+        - content: |-
+            #!/bin/bash
+            set -ex
+
+            ### Generate release number
+            # Release number consist of the latest release version of the upstream repo
+            # suffixed with 'slr' suffix and amount of commits to be unique
+            COMMITS_NUMBER=$(git rev-list --count HEAD)
+            # 'hub' uses upstream remote by default, for some reason:
+            # https://hub.github.com/hub.1.html
+            git remote add upstream $UPSTREAM || true
+            git fetch upstream master
+            git checkout upstream/master
+            LATEST_UPSTREAM_RELEASE=$LATEST_UPSTREAM_RELEASE || $(hub release -L 1 | grep . || git describe --abbrev=0 --tags)
+            git checkout master
+            git remote remove upstream
+            
+            ### Cleanup, build, archive
+            rm -rf ./Carthage/ ./DerivedData
+            carthage build --no-skip-current
+            zip -r $ARTIFACT ./Carthage/Build
+
+            RELEASE=$(echo $LATEST_UPSTREAM_RELEASE'-slr.'$COMMITS_NUMBER)
+
+            ### Create release and upload
+            # Remove upstream to make 'hub' upload to 'origin' repo rather than default 'upstream'
+            hub release create -a $ARTIFACT -m $RELEASE $RELEASE
+
+app:
+  envs:
+  - ARTIFACT: "SwiftGRPC.framework.zip"
+  - UPSTREAM: "git@github.com:grpc/grpc-swift.git"
+  - LATEST_UPSTREAM_RELEASE: "0.9.1"
