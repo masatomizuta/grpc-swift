@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		868E4C94A300C1DF3869FA8C /* cgrpc.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_1031 /* cgrpc.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83A7A748CC422759D3F34964 /* cgrpc.h in Headers */ = {isa = PBXBuildFile; fileRef = OBJ_1031 /* cgrpc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		OBJ_1646 /* a_bitstr.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* a_bitstr.c */; };
 		OBJ_1647 /* a_bool.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* a_bool.c */; };
 		OBJ_1648 /* a_d2i_fp.c in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* a_d2i_fp.c */; };
@@ -4205,35 +4205,35 @@
 		OBJ_1587 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				SwiftGRPC::Echo::Product /* Echo */,
-				SwiftProtobuf::protoc-gen-swift::Product /* protoc-gen-swift */,
-				swift-nio::CNIOZlib::Product /* CNIOZlib.framework */,
-				swift-nio::NIO::Product /* NIO.framework */,
-				SwiftGRPC::SwiftGRPC::Product /* SwiftGRPC.framework */,
-				SwiftProtobuf::SwiftProtobufPluginLibrary::Product /* SwiftProtobufPluginLibrary.framework */,
-				SwiftGRPC::SwiftGRPCNIO::Product /* SwiftGRPCNIO.framework */,
-				SwiftGRPC::EchoNIO::Product /* EchoNIO */,
-				swift-nio::CNIOAtomics::Product /* CNIOAtomics.framework */,
-				swift-nio-http2::NIOHTTP2::Product /* NIOHTTP2.framework */,
-				SwiftGRPC::BoringSSL::Product /* BoringSSL.framework */,
-				swift-nio::CNIOSHA1::Product /* CNIOSHA1.framework */,
-				swift-nio::CNIOHTTPParser::Product /* CNIOHTTPParser.framework */,
-				swift-nio::NIOFoundationCompat::Product /* NIOFoundationCompat.framework */,
-				swift-nio::NIOConcurrencyHelpers::Product /* NIOConcurrencyHelpers.framework */,
-				SwiftGRPC::SwiftGRPCTests::Product /* SwiftGRPCTests.xctest */,
-				swift-nio::NIOTLS::Product /* NIOTLS.framework */,
-				swift-nio-http2::CNIONghttp2::Product /* CNIONghttp2.framework */,
-				Commander::Commander::Product /* Commander.framework */,
-				SwiftProtobuf::SwiftProtobuf::Product /* SwiftProtobuf.framework */,
-				swift-nio::NIOHTTP1::Product /* NIOHTTP1.framework */,
-				SwiftGRPC::Simple::Product /* Simple */,
-				SwiftGRPC::SwiftGRPCNIOTests::Product /* SwiftGRPCNIOTests.xctest */,
-				swift-nio::CNIODarwin::Product /* CNIODarwin.framework */,
-				SwiftGRPC::RootsEncoder::Product /* RootsEncoder */,
-				swift-nio::CNIOLinux::Product /* CNIOLinux.framework */,
-				SwiftGRPC::CgRPC::Product /* CgRPC.framework */,
 				swift-nio::NIOPriorityQueue::Product /* NIOPriorityQueue.framework */,
+				swift-nio-http2::NIOHTTP2::Product /* NIOHTTP2.framework */,
+				SwiftGRPC::Simple::Product /* Simple */,
+				Commander::Commander::Product /* Commander.framework */,
+				SwiftGRPC::SwiftGRPCNIOTests::Product /* SwiftGRPCNIOTests.xctest */,
+				swift-nio::CNIOSHA1::Product /* CNIOSHA1.framework */,
+				SwiftGRPC::RootsEncoder::Product /* RootsEncoder */,
+				SwiftProtobuf::SwiftProtobufPluginLibrary::Product /* SwiftProtobufPluginLibrary.framework */,
+				swift-nio::NIOFoundationCompat::Product /* NIOFoundationCompat.framework */,
+				SwiftGRPC::BoringSSL::Product /* BoringSSL.framework */,
+				swift-nio-http2::CNIONghttp2::Product /* CNIONghttp2.framework */,
+				swift-nio::CNIODarwin::Product /* CNIODarwin.framework */,
+				SwiftProtobuf::SwiftProtobuf::Product /* SwiftProtobuf.framework */,
+				swift-nio::NIO::Product /* NIO.framework */,
+				swift-nio::CNIOHTTPParser::Product /* CNIOHTTPParser.framework */,
+				SwiftGRPC::Echo::Product /* Echo */,
+				SwiftGRPC::SwiftGRPCTests::Product /* SwiftGRPCTests.xctest */,
+				SwiftGRPC::CgRPC::Product /* CgRPC.framework */,
+				SwiftGRPC::SwiftGRPC::Product /* SwiftGRPC.framework */,
+				swift-nio::CNIOLinux::Product /* CNIOLinux.framework */,
+				swift-nio::CNIOAtomics::Product /* CNIOAtomics.framework */,
+				swift-nio::CNIOZlib::Product /* CNIOZlib.framework */,
+				swift-nio::NIOHTTP1::Product /* NIOHTTP1.framework */,
+				SwiftGRPC::EchoNIO::Product /* EchoNIO */,
+				swift-nio::NIOConcurrencyHelpers::Product /* NIOConcurrencyHelpers.framework */,
+				SwiftProtobuf::protoc-gen-swift::Product /* protoc-gen-swift */,
+				SwiftGRPC::SwiftGRPCNIO::Product /* SwiftGRPCNIO.framework */,
 				SwiftGRPC::protoc-gen-swiftgrpc::Product /* protoc-gen-swiftgrpc */,
+				swift-nio::NIOTLS::Product /* NIOTLS.framework */,
 			);
 			name = Products;
 			path = "";
@@ -6497,11 +6497,11 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		239469C0929B30921CC61009 /* Headers */ = {
+		C2BA849928F8889C6EEB918E /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				868E4C94A300C1DF3869FA8C /* cgrpc.h in Headers */,
+				83A7A748CC422759D3F34964 /* cgrpc.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6530,7 +6530,7 @@
 			buildPhases = (
 				OBJ_2045 /* Sources */,
 				OBJ_2475 /* Frameworks */,
-				239469C0929B30921CC61009 /* Headers */,
+				C2BA849928F8889C6EEB918E /* Headers */,
 			);
 			buildRules = (
 			);
