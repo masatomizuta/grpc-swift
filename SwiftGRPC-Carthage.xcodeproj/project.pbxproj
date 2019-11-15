@@ -2113,13 +2113,13 @@
 		OBJ_997 /* compression_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = compression_types.h; sourceTree = "<group>"; };
 		OBJ_998 /* atm_gcc_sync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = atm_gcc_sync.h; sourceTree = "<group>"; };
 		OBJ_999 /* atm_gcc_atomic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = atm_gcc_atomic.h; sourceTree = "<group>"; };
-		"SwiftGRPC::BoringSSL::Product" /* BoringSSL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = BoringSSL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		"SwiftGRPC::CgRPC::Product" /* CgRPC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CgRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"SwiftGRPC::BoringSSL::Product" /* BoringSSL.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BoringSSL.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"SwiftGRPC::CgRPC::Product" /* CgRPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CgRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftGRPC::Echo::Product" /* Echo */ = {isa = PBXFileReference; lastKnownFileType = text; path = Echo; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftGRPC::EchoNIO::Product" /* EchoNIO */ = {isa = PBXFileReference; lastKnownFileType = text; path = EchoNIO; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftGRPC::RootsEncoder::Product" /* RootsEncoder */ = {isa = PBXFileReference; lastKnownFileType = text; path = RootsEncoder; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftGRPC::Simple::Product" /* Simple */ = {isa = PBXFileReference; lastKnownFileType = text; path = Simple; sourceTree = BUILT_PRODUCTS_DIR; };
-		"SwiftGRPC::SwiftGRPC::Product" /* SwiftGRPC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftGRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"SwiftGRPC::SwiftGRPC::Product" /* SwiftGRPC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftGRPC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftGRPC::SwiftGRPCNIO::Product" /* SwiftGRPCNIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SwiftGRPCNIO.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftGRPC::SwiftGRPCNIOTests::Product" /* SwiftGRPCNIOTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = SwiftGRPCNIOTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		"SwiftGRPC::SwiftGRPCTests::Product" /* SwiftGRPCTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = SwiftGRPCTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3995,7 +3995,7 @@
 			path = grpclb;
 			sourceTree = "<group>";
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -4026,7 +4026,6 @@
 				OBJ_1495 /* SwiftGRPC.podspec */,
 			);
 			indentWidth = 2;
-			name = "";
 			sourceTree = "<group>";
 			tabWidth = 2;
 			usesTabs = 0;
@@ -5366,7 +5365,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_1445 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -6295,6 +6294,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = BoringSSL;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6335,6 +6335,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = BoringSSL;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6376,6 +6377,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = CgRPC;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6417,6 +6419,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = CgRPC;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6456,7 +6459,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = SwiftGRPC;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6496,7 +6499,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = SwiftGRPC;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6523,7 +6526,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = SwiftProtobuf;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6550,7 +6553,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 5.1.2;
 				TARGET_NAME = SwiftProtobuf;
 				TVOS_DEPLOYMENT_TARGET = 10.0;
 			};
@@ -6580,6 +6583,7 @@
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.1.2;
 				USE_HEADERMAP = NO;
 			};
 			name = Debug;
@@ -6605,6 +6609,7 @@
 				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator appletvos appletvsimulator watchos watchsimulator";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) SWIFT_PACKAGE";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.1.2;
 				USE_HEADERMAP = NO;
 			};
 			name = Release;
