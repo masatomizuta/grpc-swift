@@ -33,7 +33,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BuildableName = "&apos;$(TARGET_NAME)&apos;"
-               BlueprintName = "EchoNIO"
+               BlueprintName = "protoc-gen-swiftgrpc"
                ReferencedContainer = "container:SwiftGRPC-Carthage.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftGRPC::BoringSSL"
-               BuildableName = "BoringSSL.framework"
-               BlueprintName = "BoringSSL"
+               BlueprintIdentifier = "SwiftGRPC::SwiftGRPC"
+               BuildableName = "SwiftGRPC.framework"
+               BlueprintName = "SwiftGRPC"
                ReferencedContainer = "container:SwiftGRPC-Carthage.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -73,9 +73,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftGRPC::SwiftGRPC"
-               BuildableName = "SwiftGRPC.framework"
-               BlueprintName = "SwiftGRPC"
+               BuildableName = "&apos;$(TARGET_NAME)&apos;"
+               BlueprintName = "RootsEncoder"
                ReferencedContainer = "container:SwiftGRPC-Carthage.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -114,19 +113,6 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BuildableName = "&apos;$(TARGET_NAME)&apos;"
-               BlueprintName = "protoc-gen-swiftgrpc"
-               ReferencedContainer = "container:SwiftGRPC-Carthage.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BuildableName = "&apos;$(TARGET_NAME)&apos;"
                BlueprintName = "Simple"
                ReferencedContainer = "container:SwiftGRPC-Carthage.xcodeproj">
             </BuildableReference>
@@ -139,8 +125,22 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftGRPC::BoringSSL"
+               BuildableName = "BoringSSL.framework"
+               BlueprintName = "BoringSSL"
+               ReferencedContainer = "container:SwiftGRPC-Carthage.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BuildableName = "&apos;$(TARGET_NAME)&apos;"
-               BlueprintName = "RootsEncoder"
+               BlueprintName = "EchoNIO"
                ReferencedContainer = "container:SwiftGRPC-Carthage.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

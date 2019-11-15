@@ -105,9 +105,8 @@ LoadBalancingPolicy::PickResult LoadBalancingPolicy::QueuePicker::Pick(
   if (!exit_idle_called_) {
     exit_idle_called_ = true;
     parent_->Ref().release();  // ref held by closure.
-    GRPC_CLOSURE_SCHED(
-        GRPC_CLOSURE_CREATE(&CallExitIdle, parent_.get(),
-                            grpc_combiner_scheduler(parent_->combiner())),
+    parent_->combiner()->Run(
+        GRPC_CLOSURE_CREATE(&CallExitIdle, parent_.get(), nullptr),
         GRPC_ERROR_NONE);
   }
   PickResult result;
@@ -129,7 +128,7 @@ void LoadBalancingPolicy::QueuePicker::CallExitIdle(void* arg,
 LoadBalancingPolicy::PickResult
 LoadBalancingPolicy::TransientFailurePicker::Pick(PickArgs args) {
   PickResult result;
-  result.type = PickResult::PICK_TRANSIENT_FAILURE;
+  result.type = PickResult::PICK_FAILED;
   result.error = GRPC_ERROR_REF(error_);
   return result;
 }

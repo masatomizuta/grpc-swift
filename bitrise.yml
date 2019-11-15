@@ -28,7 +28,7 @@ workflows:
             LATEST_UPSTREAM_RELEASE=$LATEST_UPSTREAM_RELEASE || $(hub release -L 1 | grep . || git describe --abbrev=0 --tags)
             git checkout master
             git remote remove upstream
-            
+
             ### Cleanup, build, archive
             rm -rf ./Carthage/ ./DerivedData
             carthage build --no-skip-current
@@ -44,4 +44,4 @@ app:
   envs:
   - ARTIFACT: "SwiftGRPC.framework.zip"
   - UPSTREAM: "git@github.com:grpc/grpc-swift.git"
-  - LATEST_UPSTREAM_RELEASE: "0.9.1"
+  - LATEST_UPSTREAM_RELEASE: "0.10.0"

@@ -1,7 +1,7 @@
 FROM swift:latest
 MAINTAINER Tim Burks <timburks@google.com>
 
-ENV PROTOC_VERSION=3.9.1
+ENV PROTOC_VERSION=3.10.1
 
 # Install a few needed packages that aren't in swiftdocker/swift
 RUN apt-get -q update \
@@ -17,7 +17,7 @@ RUN curl -O -L https://github.com/google/protobuf/releases/download/v${PROTOC_VE
     && rm -rf protoc-${PROTOC_VERSION}-linux-x86_64.zip
 
 # Build and install the swiftgrpc plugin
-RUN git clone https://github.com/grpc/grpc-swift \
+RUN git clone https://github.com/streamlayer/grpc-swift \
     && cd grpc-swift \
     && make \
     && cp protoc-gen-swift protoc-gen-swiftgrpc /usr/bin \

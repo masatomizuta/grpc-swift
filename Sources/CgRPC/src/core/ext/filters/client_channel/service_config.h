@@ -62,8 +62,6 @@ class ServiceConfig : public RefCounted<ServiceConfig> {
   class ParsedConfig {
    public:
     virtual ~ParsedConfig() = default;
-
-    GRPC_ABSTRACT_BASE_CLASS;
   };
 
   /// This is the base class that all service config parsers should derive from.
@@ -71,19 +69,21 @@ class ServiceConfig : public RefCounted<ServiceConfig> {
    public:
     virtual ~Parser() = default;
 
-    virtual UniquePtr<ParsedConfig> ParseGlobalParams(const grpc_json* json,
-                                                      grpc_error** error) {
+    virtual UniquePtr<ParsedConfig> ParseGlobalParams(
+        const grpc_json* /* json */, grpc_error** error) {
+      // Avoid unused parameter warning on debug-only parameter
+      (void)error;
       GPR_DEBUG_ASSERT(error != nullptr);
       return nullptr;
     }
 
-    virtual UniquePtr<ParsedConfig> ParsePerMethodParams(const grpc_json* json,
-                                                         grpc_error** error) {
+    virtual UniquePtr<ParsedConfig> ParsePerMethodParams(
+        const grpc_json* /* json */, grpc_error** error) {
+      // Avoid unused parameter warning on debug-only parameter
+      (void)error;
       GPR_DEBUG_ASSERT(error != nullptr);
       return nullptr;
     }
-
-    GRPC_ABSTRACT_BASE_CLASS;
   };
 
   static constexpr int kNumPreallocatedParsers = 4;

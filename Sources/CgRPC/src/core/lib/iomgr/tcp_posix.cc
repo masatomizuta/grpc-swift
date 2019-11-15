@@ -89,7 +89,7 @@ struct grpc_tcp {
   bool is_first_read;
   double target_length;
   double bytes_read_this_round;
-  gpr_refcount refcount;
+  grpc_core::RefCount refcount;
   gpr_atm shutdown_count;
 
   int min_read_chunk_size;
@@ -161,7 +161,7 @@ static void tcp_handle_write(void* arg /* grpc_tcp */, grpc_error* error);
 static void tcp_drop_uncovered_then_handle_write(void* arg /* grpc_tcp */,
                                                  grpc_error* error);
 
-static void done_poller(void* bp, grpc_error* error_ignored) {
+static void done_poller(void* bp, grpc_error* /*error_ignored*/) {
   backup_poller* p = static_cast<backup_poller*>(bp);
   if (GRPC_TRACE_FLAG_ENABLED(grpc_tcp_trace)) {
     gpr_log(GPR_INFO, "BACKUP_POLLER:%p destroy", p);
@@ -170,7 +170,7 @@ static void done_poller(void* bp, grpc_error* error_ignored) {
   gpr_free(p);
 }
 
-static void run_poller(void* bp, grpc_error* error_ignored) {
+static void run_poller(void* bp, grpc_error* /*error_ignored*/) {
   backup_poller* p = static_cast<backup_poller*>(bp);
   if (GRPC_TRACE_FLAG_ENABLED(grpc_tcp_trace)) {
     gpr_log(GPR_INFO, "BACKUP_POLLER:%p run", p);
@@ -206,7 +206,7 @@ static void run_poller(void* bp, grpc_error* error_ignored) {
   }
 }
 
-static void drop_uncovered(grpc_tcp* tcp) {
+static void drop_uncovered(grpc_tcp* /*tcp*/) {
   backup_poller* p = (backup_poller*)gpr_atm_acq_load(&g_backup_poller);
   gpr_atm old_count =
       gpr_atm_full_fetch_add(&g_uncovered_notifications_pending, -1);
@@ -359,41 +359,29 @@ static void tcp_free(grpc_tcp* tcp) {
 }
 
 #ifndef NDEBUG
-#define TCP_UNREF(tcp, reason) tcp_unref((tcp), (reason), __FILE__, __LINE__)
-#define TCP_REF(tcp, reason) tcp_ref((tcp), (reason), __FILE__, __LINE__)
-static void tcp_unref(grpc_tcp* tcp, const char* reason, const char* file,
-                      int line) {
-  if (GRPC_TRACE_FLAG_ENABLED(grpc_tcp_trace)) {
-    gpr_atm val = gpr_atm_no_barrier_load(&tcp->refcount.count);
-    gpr_log(file, line, GPR_LOG_SEVERITY_DEBUG,
-            "TCP unref %p : %s %" PRIdPTR " -> %" PRIdPTR, tcp, reason, val,
-            val - 1);
-  }
-  if (gpr_unref(&tcp->refcount)) {
+#define TCP_UNREF(tcp, reason) tcp_unref((tcp), (reason), DEBUG_LOCATION)
+#define TCP_REF(tcp, reason) tcp_ref((tcp), (reason), DEBUG_LOCATION)
+static void tcp_unref(grpc_tcp* tcp, const char* reason,
+                      const grpc_core::DebugLocation& debug_location) {
+  if (GPR_UNLIKELY(tcp->refcount.Unref(debug_location, reason))) {
     tcp_free(tcp);
   }
 }
 
-static void tcp_ref(grpc_tcp* tcp, const char* reason, const char* file,
-                    int line) {
-  if (GRPC_TRACE_FLAG_ENABLED(grpc_tcp_trace)) {
-    gpr_atm val = gpr_atm_no_barrier_load(&tcp->refcount.count);
-    gpr_log(file, line, GPR_LOG_SEVERITY_DEBUG,
-            "TCP   ref %p : %s %" PRIdPTR " -> %" PRIdPTR, tcp, reason, val,
-            val + 1);
-  }
-  gpr_ref(&tcp->refcount);
+static void tcp_ref(grpc_tcp* tcp, const char* reason,
+                    const grpc_core::DebugLocation& debug_location) {
+  tcp->refcount.Ref(debug_location, reason);
 }
 #else
 #define TCP_UNREF(tcp, reason) tcp_unref((tcp))
 #define TCP_REF(tcp, reason) tcp_ref((tcp))
 static void tcp_unref(grpc_tcp* tcp) {
-  if (gpr_unref(&tcp->refcount)) {
+  if (GPR_UNLIKELY(tcp->refcount.Unref())) {
     tcp_free(tcp);
   }
 }
 
-static void tcp_ref(grpc_tcp* tcp) { gpr_ref(&tcp->refcount); }
+static void tcp_ref(grpc_tcp* tcp) { tcp->refcount.Ref(); }
 #endif
 
 static void tcp_destroy(grpc_endpoint* ep) {
@@ -583,7 +571,7 @@ static void tcp_read_allocation_done(void* tcpp, grpc_error* error) {
     gpr_log(GPR_INFO, "TCP:%p read_allocation_done: %s", tcp,
             grpc_error_string(error));
   }
-  if (error != GRPC_ERROR_NONE) {
+  if (GPR_UNLIKELY(error != GRPC_ERROR_NONE)) {
     grpc_slice_buffer_reset_and_unref_internal(tcp->incoming_buffer);
     grpc_slice_buffer_reset_and_unref_internal(&tcp->last_read_buffer);
     call_read_cb(tcp, GRPC_ERROR_REF(error));
@@ -601,14 +589,17 @@ static void tcp_continue_read(grpc_tcp* tcp) {
     if (GRPC_TRACE_FLAG_ENABLED(grpc_tcp_trace)) {
       gpr_log(GPR_INFO, "TCP:%p alloc_slices", tcp);
     }
-    grpc_resource_user_alloc_slices(&tcp->slice_allocator, target_read_size, 1,
-                                    tcp->incoming_buffer);
-  } else {
-    if (GRPC_TRACE_FLAG_ENABLED(grpc_tcp_trace)) {
-      gpr_log(GPR_INFO, "TCP:%p do_read", tcp);
+    if (GPR_UNLIKELY(!grpc_resource_user_alloc_slices(&tcp->slice_allocator,
+                                                      target_read_size, 1,
+                                                      tcp->incoming_buffer))) {
+      // Wait for allocation.
+      return;
     }
-    tcp_do_read(tcp);
   }
+  if (GRPC_TRACE_FLAG_ENABLED(grpc_tcp_trace)) {
+    gpr_log(GPR_INFO, "TCP:%p do_read", tcp);
+  }
+  tcp_do_read(tcp);
 }
 
 static void tcp_handle_read(void* arg /* grpc_tcp */, grpc_error* error) {
@@ -617,7 +608,7 @@ static void tcp_handle_read(void* arg /* grpc_tcp */, grpc_error* error) {
     gpr_log(GPR_INFO, "TCP:%p got_read: %s", tcp, grpc_error_string(error));
   }
 
-  if (error != GRPC_ERROR_NONE) {
+  if (GPR_UNLIKELY(error != GRPC_ERROR_NONE)) {
     grpc_slice_buffer_reset_and_unref_internal(tcp->incoming_buffer);
     grpc_slice_buffer_reset_and_unref_internal(&tcp->last_read_buffer);
     call_read_cb(tcp, GRPC_ERROR_REF(error));
@@ -885,15 +876,16 @@ static void tcp_handle_error(void* arg /* grpc_tcp */, grpc_error* error) {
 }
 
 #else  /* GRPC_LINUX_ERRQUEUE */
-static bool tcp_write_with_timestamps(grpc_tcp* tcp, struct msghdr* msg,
-                                      size_t sending_length,
-                                      ssize_t* sent_length) {
+static bool tcp_write_with_timestamps(grpc_tcp* /*tcp*/, struct msghdr* /*msg*/,
+                                      size_t /*sending_length*/,
+                                      ssize_t* /*sent_length*/) {
   gpr_log(GPR_ERROR, "Write with timestamps not supported for this platform");
   GPR_ASSERT(0);
   return false;
 }
 
-static void tcp_handle_error(void* arg /* grpc_tcp */, grpc_error* error) {
+static void tcp_handle_error(void* /*arg*/ /* grpc_tcp */,
+                             grpc_error* /*error*/) {
   gpr_log(GPR_ERROR, "Error handling is not supported for this platform");
   GPR_ASSERT(0);
 }
@@ -1032,7 +1024,7 @@ static void tcp_handle_write(void* arg /* grpc_tcp */, grpc_error* error) {
   if (error != GRPC_ERROR_NONE) {
     cb = tcp->write_cb;
     tcp->write_cb = nullptr;
-    cb->cb(cb->cb_arg, error);
+    GRPC_CLOSURE_SCHED(cb, GRPC_ERROR_REF(error));
     TCP_UNREF(tcp, "write");
     return;
   }
@@ -1042,6 +1034,8 @@ static void tcp_handle_write(void* arg /* grpc_tcp */, grpc_error* error) {
       gpr_log(GPR_INFO, "write: delayed");
     }
     notify_on_write(tcp);
+    // tcp_flush does not populate error if it has returned false.
+    GPR_DEBUG_ASSERT(error == GRPC_ERROR_NONE);
   } else {
     cb = tcp->write_cb;
     tcp->write_cb = nullptr;
@@ -1049,7 +1043,8 @@ static void tcp_handle_write(void* arg /* grpc_tcp */, grpc_error* error) {
       const char* str = grpc_error_string(error);
       gpr_log(GPR_INFO, "write: %s", str);
     }
-    GRPC_CLOSURE_SCHED(cb, error);
+    // No need to take a ref on error since tcp_flush provides a ref.
+    GRPC_CLOSURE_RUN(cb, error);
     TCP_UNREF(tcp, "write");
   }
 }
@@ -1230,7 +1225,7 @@ grpc_endpoint* grpc_tcp_create(grpc_fd* em_fd,
   tcp->ts_capable = true;
   tcp->outgoing_buffer_arg = nullptr;
   /* paired with unref in grpc_tcp_destroy */
-  gpr_ref_init(&tcp->refcount, 1);
+  new (&tcp->refcount) grpc_core::RefCount(1, &grpc_tcp_trace);
   gpr_atm_no_barrier_store(&tcp->shutdown_count, 0);
   tcp->em_fd = em_fd;
   grpc_slice_buffer_init(&tcp->last_read_buffer);

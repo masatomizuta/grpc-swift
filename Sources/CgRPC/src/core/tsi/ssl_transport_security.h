@@ -260,8 +260,8 @@ struct tsi_ssl_server_handshaker_options {
      specified. If this parameter is 0, the other alpn parameters must be
      NULL. */
   uint16_t num_alpn_protocols;
-  /* session_ticket_key is optional key for encrypting session keys. If paramter
-     is not specified it must be NULL. */
+  /* session_ticket_key is optional key for encrypting session keys. If
+     parameter is not specified it must be NULL. */
   const char* session_ticket_key;
   /* session_ticket_key_size is a size of session ticket encryption key. */
   size_t session_ticket_key_size;
@@ -331,5 +331,9 @@ typedef struct {
 const tsi_ssl_handshaker_factory_vtable* tsi_ssl_handshaker_factory_swap_vtable(
     tsi_ssl_handshaker_factory* factory,
     tsi_ssl_handshaker_factory_vtable* new_vtable);
+
+/* Exposed for testing only. */
+tsi_result tsi_ssl_extract_x509_subject_names_from_pem_cert(
+    const char* pem_cert, tsi_peer* peer);
 
 #endif /* GRPC_CORE_TSI_SSL_TRANSPORT_SECURITY_H */

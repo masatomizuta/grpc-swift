@@ -34,6 +34,7 @@ rm -rf $DSTROOT/CgRPC/src
 rm -rf $DSTROOT/CgRPC/grpc
 rm -rf $DSTROOT/CgRPC/third_party
 rm -rf $DSTROOT/CgRPC/include/grpc
+rm -rf $DSTROOT/CgRPC/include/upb
 
 #
 # Copy grpc headers and source files
@@ -65,12 +66,23 @@ do
 	cp $TMP_DIR/grpc/$src $dest
 done
 
-echo "ADDING additional compiler flags to nanopb/pb.h"
-perl -pi -e 's/\/\* #define PB_FIELD_16BIT 1 \*\//#define PB_FIELD_16BIT 1/' $DSTROOT/CgRPC/third_party/nanopb/pb.h
-perl -pi -e 's/\/\* #define PB_NO_PACKED_STRUCTS 1 \*\//#define PB_NO_PACKED_STRUCTS 1/' $DSTROOT/CgRPC/third_party/nanopb/pb.h
+# echo "ADDING additional compiler flags to nanopb/pb.h"
+# perl -pi -e 's/\/\* #define PB_FIELD_16BIT 1 \*\//#define PB_FIELD_16BIT 1/' $DSTROOT/CgRPC/third_party/nanopb/pb.h
+# perl -pi -e 's/\/\* #define PB_NO_PACKED_STRUCTS 1 \*\//#define PB_NO_PACKED_STRUCTS 1/' $DSTROOT/CgRPC/third_party/nanopb/pb.h
 
-echo "MOVING nanopb headers to CgRPC/include"
-mv $DSTROOT/CgRPC/third_party/nanopb/*.h $DSTROOT/CgRPC/include/
+echo "MOVING upb headers to CgRPC/include"
+mv $DSTROOT/CgRPC/third_party/upb/upb/*.{h,inc} $DSTROOT/CgRPC/include/upb
+
+echo "MOVING generated headers to CgRPC/include"
+GEN_BASE=$DSTROOT/CgRPC/src/core/ext/upb-generated
+move_files=$(find $GEN_BASE -name "*.h" -o -name "*.inc" -type f | xargs -n1 realpath --relative-to $GEN_BASE)
+for src in $move_files
+do
+	dest="$DSTROOT/CgRPC/include/$src"
+	dest_dir=$(dirname $dest)
+	mkdir -pv $dest_dir
+	cp $GEN_BASE/$src $dest
+done
 
 # echo "ADDING additional compiler flags to tsi/ssl_transport_security.cc"
 # perl -pi -e 's/#define TSI_OPENSSL_ALPN_SUPPORT 1/#define TSI_OPENSSL_ALPN_SUPPORT 0/' $DSTROOT/CgRPC/src/core/tsi/ssl_transport_security.cc

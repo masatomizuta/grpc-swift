@@ -28,27 +28,25 @@
   #
 
   <%!
-  def grpc_private_files(libs):
+  def grpc_lib_files(libs, expect_libs, groups):
     out = []
     for lib in libs:
-      if lib.name in ("grpc", "gpr"):
-        out += lib.get('headers', [])
-        out += lib.get('src', [])
-    return [f for f in out]
+      if lib.name in expect_libs:
+        for group in groups:
+          out += lib.get(group, [])
+    return sorted(out)
+
+  def grpc_private_files(libs):
+    out = grpc_lib_files(libs, ("grpc", "gpr"), ("headers", "src"))
+    return out
 
   def grpc_public_headers(libs):
-    out = []
-    for lib in libs:
-      if lib.name in ("grpc", "gpr"):
-        out += lib.get('public_headers', [])
+    out = grpc_lib_files(libs, ("grpc", "gpr"), ("public_headers",))
     return out
 
   def grpc_private_headers(libs):
-    out = []
-    for lib in libs:
-      if lib.name in ("grpc", "gpr"):
-        out += lib.get('headers', [])
-    return [f for f in out]
+    out = grpc_lib_files(libs, ("grpc", "gpr"), ("headers",))
+    return out
 
   def sh_multiline_list(files, indent):
     return ('\n' + indent*' ').join('\'%s\'' % f for f in files)

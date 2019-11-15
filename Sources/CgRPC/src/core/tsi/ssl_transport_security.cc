@@ -350,11 +350,19 @@ static tsi_result add_subject_alt_names_properties_to_peer(
   for (i = 0; i < subject_alt_name_count; i++) {
     GENERAL_NAME* subject_alt_name =
         sk_GENERAL_NAME_value(subject_alt_names, TSI_SIZE_AS_SIZE(i));
-    /* Filter out the non-dns entries names. */
-    if (subject_alt_name->type == GEN_DNS) {
+    if (subject_alt_name->type == GEN_DNS ||
+        subject_alt_name->type == GEN_EMAIL ||
+        subject_alt_name->type == GEN_URI) {
       unsigned char* name = nullptr;
       int name_size;
-      name_size = ASN1_STRING_to_UTF8(&name, subject_alt_name->d.dNSName);
+      if (subject_alt_name->type == GEN_DNS) {
+        name_size = ASN1_STRING_to_UTF8(&name, subject_alt_name->d.dNSName);
+      } else if (subject_alt_name->type == GEN_EMAIL) {
+        name_size = ASN1_STRING_to_UTF8(&name, subject_alt_name->d.rfc822Name);
+      } else {
+        name_size = ASN1_STRING_to_UTF8(
+            &name, subject_alt_name->d.uniformResourceIdentifier);
+      }
       if (name_size < 0) {
         gpr_log(GPR_ERROR, "Could not get utf8 from asn1 string.");
         result = TSI_INTERNAL_ERROR;
@@ -542,7 +550,8 @@ static tsi_result ssl_ctx_use_certificate_chain(SSL_CTX* context,
         break;
       }
       /* We don't need to free certificate_authority as its ownership has been
-         transfered to the context. That is not the case for certificate though.
+         transferred to the context. That is not the case for certificate
+         though.
        */
     }
   } while (0);
@@ -703,8 +712,8 @@ static tsi_result populate_ssl_context(
 }
 
 /* Extracts the CN and the SANs from an X509 cert as a peer object. */
-static tsi_result extract_x509_subject_names_from_pem_cert(const char* pem_cert,
-                                                           tsi_peer* peer) {
+tsi_result tsi_ssl_extract_x509_subject_names_from_pem_cert(
+    const char* pem_cert, tsi_peer* peer) {
   tsi_result result = TSI_OK;
   X509* cert = nullptr;
   BIO* pem;
@@ -765,7 +774,7 @@ static tsi_result build_alpn_protocol_name_list(
 // the server's certificate, but we need to pull it anyway, in case a higher
 // layer wants to look at it. In this case the verification may fail, but
 // we don't really care.
-static int NullVerifyCallback(int preverify_ok, X509_STORE_CTX* ctx) {
+static int NullVerifyCallback(int /*preverify_ok*/, X509_STORE_CTX* /*ctx*/) {
   return 1;
 }
 
@@ -1256,7 +1265,7 @@ static tsi_result ssl_handshaker_next(
     tsi_handshaker* self, const unsigned char* received_bytes,
     size_t received_bytes_size, const unsigned char** bytes_to_send,
     size_t* bytes_to_send_size, tsi_handshaker_result** handshaker_result,
-    tsi_handshaker_on_next_done_cb cb, void* user_data) {
+    tsi_handshaker_on_next_done_cb /*cb*/, void* /*user_data*/) {
   /* Input sanity check.  */
   if ((received_bytes_size > 0 && received_bytes == nullptr) ||
       bytes_to_send == nullptr || bytes_to_send_size == nullptr ||
@@ -1456,11 +1465,9 @@ static void tsi_ssl_client_handshaker_factory_destroy(
   gpr_free(self);
 }
 
-static int client_handshaker_factory_npn_callback(SSL* ssl, unsigned char** out,
-                                                  unsigned char* outlen,
-                                                  const unsigned char* in,
-                                                  unsigned int inlen,
-                                                  void* arg) {
+static int client_handshaker_factory_npn_callback(
+    SSL* /*ssl*/, unsigned char** out, unsigned char* outlen,
+    const unsigned char* in, unsigned int inlen, void* arg) {
   tsi_ssl_client_handshaker_factory* factory =
       static_cast<tsi_ssl_client_handshaker_factory*>(arg);
   return select_protocol_list((const unsigned char**)out, outlen,
@@ -1547,7 +1554,8 @@ static int does_entry_match_name(grpc_core::StringView entry,
   return !entry.empty() && name_subdomain == entry;
 }
 
-static int ssl_server_handshaker_factory_servername_callback(SSL* ssl, int* ap,
+static int ssl_server_handshaker_factory_servername_callback(SSL* ssl,
+                                                             int* /*ap*/,
                                                              void* arg) {
   tsi_ssl_server_handshaker_factory* impl =
       static_cast<tsi_ssl_server_handshaker_factory*>(arg);
@@ -1570,7 +1578,7 @@ static int ssl_server_handshaker_factory_servername_callback(SSL* ssl, int* ap,
 
 #if TSI_OPENSSL_ALPN_SUPPORT
 static int server_handshaker_factory_alpn_callback(
-    SSL* ssl, const unsigned char** out, unsigned char* outlen,
+    SSL* /*ssl*/, const unsigned char** out, unsigned char* outlen,
     const unsigned char* in, unsigned int inlen, void* arg) {
   tsi_ssl_server_handshaker_factory* factory =
       static_cast<tsi_ssl_server_handshaker_factory*>(arg);
@@ -1581,7 +1589,7 @@ static int server_handshaker_factory_alpn_callback(
 #endif /* TSI_OPENSSL_ALPN_SUPPORT */
 
 static int server_handshaker_factory_npn_advertised_callback(
-    SSL* ssl, const unsigned char** out, unsigned int* outlen, void* arg) {
+    SSL* /*ssl*/, const unsigned char** out, unsigned int* outlen, void* arg) {
   tsi_ssl_server_handshaker_factory* factory =
       static_cast<tsi_ssl_server_handshaker_factory*>(arg);
   *out = factory->alpn_protocol_list;
@@ -1610,7 +1618,7 @@ static int server_handshaker_factory_new_session_callback(
     return 0;
   }
   factory->session_cache->Put(server_name, tsi::SslSessionPtr(session));
-  // Return 1 to indicate transfered ownership over the given session.
+  // Return 1 to indicate transferred ownership over the given session.
   return 1;
 }
 
@@ -1882,7 +1890,7 @@ tsi_result tsi_create_ssl_server_handshaker_factory_with_options(
       }
       /* TODO(jboeuf): Add revocation verification. */
 
-      result = extract_x509_subject_names_from_pem_cert(
+      result = tsi_ssl_extract_x509_subject_names_from_pem_cert(
           options->pem_key_cert_pairs[i].cert_chain,
           &impl->ssl_context_x509_subject_names[i]);
       if (result != TSI_OK) break;
