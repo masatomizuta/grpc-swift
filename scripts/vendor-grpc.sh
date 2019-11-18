@@ -20,6 +20,8 @@
 #
 # For usage, see `vendor-all.sh`.
 
+set -ex
+
 source ./tmp/grpc/swift-vendoring.sh
 
 TMP_DIR=./tmp
@@ -71,7 +73,12 @@ done
 # perl -pi -e 's/\/\* #define PB_NO_PACKED_STRUCTS 1 \*\//#define PB_NO_PACKED_STRUCTS 1/' $DSTROOT/CgRPC/third_party/nanopb/pb.h
 
 echo "MOVING upb headers to CgRPC/include"
-mv $DSTROOT/CgRPC/third_party/upb/upb/*.{h,inc} $DSTROOT/CgRPC/include/upb
+move_files=$(find $DSTROOT/CgRPC/third_party/upb/upb -name "*.h" -o -name "*.inc" -type f)
+mkdir -pv $DSTROOT/CgRPC/include/upb
+for src in $move_files
+do
+	mv $src $DSTROOT/CgRPC/include/upb/
+done
 
 echo "MOVING generated headers to CgRPC/include"
 GEN_BASE=$DSTROOT/CgRPC/src/core/ext/upb-generated

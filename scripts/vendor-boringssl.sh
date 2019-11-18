@@ -26,7 +26,7 @@ echo "REMOVING any previously-vendored BoringSSL code"
 rm -rf $DSTROOT/include
 rm -rf $DSTROOT/ssl
 rm -rf $DSTROOT/crypto
-# rm -rf $DSTROOT/err_data.c
+rm -rf $DSTROOT/err_data.c
 
 PATTERNS=(
 'include/openssl/*.h'
@@ -61,7 +61,7 @@ do
 done
 
 # echo "COPYING err_data.c from gRPC project"
-# cp ./third_party/grpc/src/boringssl/err_data.c $DSTROOT
+cp ./third_party/grpc/src/boringssl/err_data.c $DSTROOT
 
 for exclude in "${EXCLUDES[@]}"
 do
@@ -70,7 +70,7 @@ do
 done
 
 # echo "GENERATING err_data.c"
-# go run $SRCROOT/crypto/err/err_data_generate.go > $DSTROOT/crypto/err/err_data.c
+go run $SRCROOT/crypto/err/err_data_generate.go > $DSTROOT/crypto/err/err_data.c
 
 echo "DELETING crypto/fipsmodule/bcm.c"
 rm -f $DSTROOT/crypto/fipsmodule/bcm.c

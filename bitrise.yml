@@ -30,7 +30,7 @@ workflows:
             git remote remove upstream
 
             ### Cleanup, build, archive
-            rm -rf ./Carthage/ ./DerivedData
+            rm -rf ./Carthage/ # ./DerivedData
             carthage build --no-skip-current
             zip -r $ARTIFACT ./Carthage/Build
 
