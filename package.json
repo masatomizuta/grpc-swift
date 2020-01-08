@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "name": "@streamlayer/grpc-swift",
+  "dependencies": {
+    "@semantic-release/exec": "^3.3.8",
+    "@semantic-release/git": "^7.0.18",
+    "semantic-release": "^15.14.0"
+  }
+}
