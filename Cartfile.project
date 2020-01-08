@@ -1,0 +1,7 @@
+SwiftGRPC-Package:
+  project: SwiftGRPC-Carthage.xcodeproj
+  sdks:
+  - iphonesimulator
+  - iphoneos
+  - appletvos
+  - appletvsimulator

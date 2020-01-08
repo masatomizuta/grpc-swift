@@ -17,3 +17,5 @@ Examples/EchoWeb/dist
 Examples/EchoWeb/node_modules
 Examples/EchoWeb/package-lock.json
 *.framework.zip
+node_modules
+*.lock
