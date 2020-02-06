@@ -27,33 +27,33 @@
   # the Swift Package Manager.
   #
 
-  <%!
-  def grpc_lib_files(libs, expect_libs, groups):
-    out = []
-    for lib in libs:
-      if lib.name in expect_libs:
-        for group in groups:
-          out += lib.get(group, [])
-    return sorted(out)
+  <%
+  lib_maps = {lib.name: lib for lib in libs}
 
-  def grpc_private_files(libs):
-    out = grpc_lib_files(libs, ("grpc", "gpr"), ("headers", "src"))
-    return out
+  def ruby_multiline_list(files, indent):
+    return (',\n' + indent*' ').join('\'%s\'' % f for f in files)
 
-  def grpc_public_headers(libs):
-    out = grpc_lib_files(libs, ("grpc", "gpr"), ("public_headers",))
-    return out
+  def lib_and_transitive_deps(lib):
+    return list(sorted(set({lib} | set(lib_maps[lib].transitive_deps))))
 
-  def grpc_private_headers(libs):
-    out = grpc_lib_files(libs, ("grpc", "gpr"), ("headers",))
-    return out
+  def list_lib_files(lib, fields):
+    files = set()
+    for lib_name in lib_and_transitive_deps(lib):
+      lib = lib_maps[lib_name]
+      for field in fields:
+        files.update(lib.get(field, []))
+    return list(sorted(files))
+
+  grpc_private_files = list_lib_files("grpc", ("headers", "src"))
+  grpc_public_headers = list_lib_files("grpc", ("public_headers",))
+  grpc_private_headers = list_lib_files("grpc", ("headers",))
 
   def sh_multiline_list(files, indent):
     return ('\n' + indent*' ').join('\'%s\'' % f for f in files)
   %>
-  public_headers=(${sh_multiline_list(grpc_public_headers(libs), 2)})
+  public_headers=(${sh_multiline_list(grpc_public_headers, 2)})
 
-  source_files=(${sh_multiline_list(grpc_private_files(libs), 2)})
+  source_files=(${sh_multiline_list(grpc_private_files, 2)})
 
-  private_headers=(${sh_multiline_list(grpc_private_headers(libs), 2)})
+  private_headers=(${sh_multiline_list(grpc_private_headers, 2)})
 

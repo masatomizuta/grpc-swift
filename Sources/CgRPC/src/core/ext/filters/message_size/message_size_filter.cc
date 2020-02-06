@@ -44,8 +44,9 @@ namespace {
 size_t g_message_size_parser_index;
 }  // namespace
 
-UniquePtr<ServiceConfig::ParsedConfig> MessageSizeParser::ParsePerMethodParams(
-    const grpc_json* json, grpc_error** error) {
+std::unique_ptr<ServiceConfig::ParsedConfig>
+MessageSizeParser::ParsePerMethodParams(const grpc_json* json,
+                                        grpc_error** error) {
   GPR_DEBUG_ASSERT(error != nullptr && *error == GRPC_ERROR_NONE);
   int max_request_message_bytes = -1;
   int max_response_message_bytes = -1;
@@ -215,7 +216,7 @@ static void recv_message_ready(void* user_data, grpc_error* error) {
                              calld->recv_trailing_metadata_error,
                              "continue recv_trailing_metadata_ready");
   }
-  GRPC_CLOSURE_RUN(closure, error);
+  grpc_core::Closure::Run(DEBUG_LOCATION, closure, error);
 }
 
 // Callback invoked on completion of recv_trailing_metadata
@@ -234,7 +235,8 @@ static void recv_trailing_metadata_ready(void* user_data, grpc_error* error) {
   error =
       grpc_error_add_child(GRPC_ERROR_REF(error), GRPC_ERROR_REF(calld->error));
   // Invoke the next callback.
-  GRPC_CLOSURE_RUN(calld->original_recv_trailing_metadata_ready, error);
+  grpc_core::Closure::Run(DEBUG_LOCATION,
+                          calld->original_recv_trailing_metadata_ready, error);
 }
 
 // Start transport stream op.
@@ -286,8 +288,8 @@ static grpc_error* message_size_init_call_elem(
 
 // Destructor for call_data.
 static void message_size_destroy_call_elem(
-    grpc_call_element* elem, const grpc_call_final_info* final_info,
-    grpc_closure* ignored) {
+    grpc_call_element* elem, const grpc_call_final_info* /*final_info*/,
+    grpc_closure* /*ignored*/) {
   call_data* calld = (call_data*)elem->call_data;
   calld->~call_data();
 }
@@ -375,7 +377,7 @@ const grpc_channel_filter grpc_message_size_filter = {
 
 // Used for GRPC_CLIENT_SUBCHANNEL
 static bool maybe_add_message_size_filter_subchannel(
-    grpc_channel_stack_builder* builder, void* arg) {
+    grpc_channel_stack_builder* builder, void* /*arg*/) {
   const grpc_channel_args* channel_args =
       grpc_channel_stack_builder_get_channel_arguments(builder);
   if (grpc_channel_args_want_minimal_stack(channel_args)) {
@@ -388,7 +390,7 @@ static bool maybe_add_message_size_filter_subchannel(
 // Used for GRPC_CLIENT_DIRECT_CHANNEL and GRPC_SERVER_CHANNEL. Adds the filter
 // only if message size limits or service config is specified.
 static bool maybe_add_message_size_filter(grpc_channel_stack_builder* builder,
-                                          void* arg) {
+                                          void* /*arg*/) {
   const grpc_channel_args* channel_args =
       grpc_channel_stack_builder_get_channel_arguments(builder);
   bool enable = false;

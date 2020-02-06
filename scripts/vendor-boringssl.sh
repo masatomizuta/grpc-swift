@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright 2019, gRPC Authors All rights reserved.
 #
@@ -19,7 +19,7 @@
 #
 # For usage, see `vendor-all.sh`.
 
-SRCROOT=./tmp/grpc/third_party/boringssl
+SRCROOT=./tmp/grpc/third_party/boringssl-with-bazel/src
 DSTROOT=../Sources/BoringSSL
 
 echo "REMOVING any previously-vendored BoringSSL code"
@@ -52,7 +52,9 @@ EXCLUDES=(
 for pattern in "${PATTERNS[@]}"
 do
   for i in $SRCROOT/$pattern; do
+    echo $i
     path=${i#$SRCROOT}
+    echo $path
     dest="$DSTROOT$path"
     dest_dir=$(dirname $dest)
     mkdir -p $dest_dir
