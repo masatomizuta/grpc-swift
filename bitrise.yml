@@ -21,11 +21,18 @@ workflows:
             yarn add semantic-release @semantic-release/exec @semantic-release/git
 
             xcconfig=$(mktemp /tmp/static.xcconfig.XXXXXX)
-            trap 'rm -f "$xcconfig"' INT TERM HUP EXIT
+            trap 'rm -f "$xcconfig"; sudo xcode-select -s /Applications/Xcode.app' INT TERM HUP EXIT KILL
 
             echo "MACH_O_TYPE = mh_dylib" >> $xcconfig
             echo "DEBUG_INFORMATION_FORMAT = dwarf-with-dsym" >> $xcconfig
             echo "CLANG_ENABLE_MODULE_DEBUGGING = YES" >> $xcconfig
             export XCODE_XCCONFIG_FILE="$xcconfig"
+
+            sudo xcode-select -s /Applications/Xcode_10.2.1.app
+            # 5.0.1+6b0f2c1677afd7b6095cfee3524e116c is xcode 10.2.1 vesion
+            if ["$(carthage swift-version)" !=  "5.0.1+6b0f2c1677afd7b6095cfee3524e116c" ]; then
+              echo "Invalid swift version" 1>&2
+              exit 1
+            fi
 
             yarn semantic-release
