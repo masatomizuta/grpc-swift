@@ -42,8 +42,8 @@ git checkout $GRPC_VERSION
 cd ../..
 
 # Update the vendored version of BoringSSL (removing previous versions).
-pip install mako
-pip install pyyaml
+pip2.7 install mako
+pip2.7 install pyyaml
 ./vendor-boringssl.sh
 
 # Copy the vendoring template into the gRPC Core's directory of templates.

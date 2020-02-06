@@ -227,8 +227,9 @@ static void send_message_on_complete(void* arg, grpc_error* error) {
   grpc_call_element* elem = static_cast<grpc_call_element*>(arg);
   call_data* calld = static_cast<call_data*>(elem->call_data);
   grpc_slice_buffer_reset_and_unref_internal(&calld->slices);
-  GRPC_CLOSURE_RUN(calld->original_send_message_on_complete,
-                   GRPC_ERROR_REF(error));
+  grpc_core::Closure::Run(DEBUG_LOCATION,
+                          calld->original_send_message_on_complete,
+                          GRPC_ERROR_REF(error));
 }
 
 static void send_message_batch_continue(grpc_call_element* elem) {
@@ -320,6 +321,11 @@ static grpc_error* pull_slice_from_send_message(call_data* calld) {
 // eventually result in calling on_send_message_next_done().
 static void continue_reading_send_message(grpc_call_element* elem) {
   call_data* calld = static_cast<call_data*>(elem->call_data);
+  if (calld->slices.length ==
+      calld->send_message_batch->payload->send_message.send_message->length()) {
+    finish_send_message(elem);
+    return;
+  }
   while (calld->send_message_batch->payload->send_message.send_message->Next(
       ~static_cast<size_t>(0), &calld->on_send_message_next_done)) {
     grpc_error* error = pull_slice_from_send_message(calld);
@@ -361,7 +367,7 @@ static void on_send_message_next_done(void* arg, grpc_error* error) {
   }
 }
 
-static void start_send_message_batch(void* arg, grpc_error* unused) {
+static void start_send_message_batch(void* arg, grpc_error* /*unused*/) {
   grpc_call_element* elem = static_cast<grpc_call_element*>(arg);
   if (skip_message_compression(elem)) {
     send_message_batch_continue(elem);
@@ -448,9 +454,9 @@ static grpc_error* compress_init_call_elem(grpc_call_element* elem,
 }
 
 /* Destructor for call_data */
-static void compress_destroy_call_elem(grpc_call_element* elem,
-                                       const grpc_call_final_info* final_info,
-                                       grpc_closure* ignored) {
+static void compress_destroy_call_elem(
+    grpc_call_element* elem, const grpc_call_final_info* /*final_info*/,
+    grpc_closure* /*ignored*/) {
   call_data* calld = static_cast<call_data*>(elem->call_data);
   calld->~call_data();
 }
@@ -487,7 +493,7 @@ static grpc_error* compress_init_channel_elem(grpc_channel_element* elem,
 }
 
 /* Destructor for channel data */
-static void compress_destroy_channel_elem(grpc_channel_element* elem) {}
+static void compress_destroy_channel_elem(grpc_channel_element* /*elem*/) {}
 
 const grpc_channel_filter grpc_message_compress_filter = {
     compress_start_transport_stream_op_batch,
