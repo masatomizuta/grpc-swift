@@ -5,7 +5,7 @@
       "preset": "angular"
     }],
     ["@semantic-release/exec", {
-      "prepareCmd": "echo SWIFT_VERSION=5.0.1 >> $XCODE_XCCONFIG_FILE; carthage build --commitish v${nextRelease.version} --cache-builds --archive --archive-output SwiftGRPC.framework.zip"
+      "prepareCmd": "carthage build --commitish v${nextRelease.version} --cache-builds --archive --archive-output SwiftGRPC.framework.zip"
     }],
     ["@semantic-release/git", {
       "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
