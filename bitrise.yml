@@ -24,8 +24,8 @@ workflows:
             trap 'rm -f "$xcconfig"; sudo xcode-select -s /Applications/Xcode.app' INT TERM HUP EXIT KILL
 
             echo "MACH_O_TYPE = mh_dylib" >> $xcconfig
-            echo "DEBUG_INFORMATION_FORMAT = dwarf-with-dsym" >> $xcconfig
-            echo "CLANG_ENABLE_MODULE_DEBUGGING = YES" >> $xcconfig
+            echo "DEBUG_INFORMATION_FORMAT = dwarf" >> $xcconfig
+            echo "CLANG_ENABLE_MODULE_DEBUGGING = NO" >> $xcconfig
             export XCODE_XCCONFIG_FILE="$xcconfig"
 
             sudo xcode-select -s /Applications/Xcode_10.2.1.app
