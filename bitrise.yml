@@ -18,7 +18,7 @@ workflows:
 
             set -ex
 
-            rm -rf Carthage/Build
+            rm -rf Carthage ~/Library/Caches/org.carthage.CarthageKit/build
             yarn add semantic-release @semantic-release/exec @semantic-release/git
 
             xcconfig=$(mktemp /tmp/static.xcconfig.XXXXXX)
