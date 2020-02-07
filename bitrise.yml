@@ -30,7 +30,7 @@ workflows:
 
             sudo xcode-select -s /Applications/Xcode_10.2.1.app
             # 5.0.1+6b0f2c1677afd7b6095cfee3524e116c is xcode 10.2.1 vesion
-            if ["$(carthage swift-version)" !=  "5.0.1+6b0f2c1677afd7b6095cfee3524e116c" ]; then
+            if [ "$(carthage swift-version)" !=  "5.0.1+6b0f2c1677afd7b6095cfee3524e116c" ]; then
               echo "Invalid swift version" 1>&2
               exit 1
             fi
