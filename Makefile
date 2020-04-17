@@ -22,7 +22,7 @@ project:
 	@-ruby fix-project-settings.rb SwiftGRPC.xcodeproj || echo "Consider running 'sudo gem install xcodeproj' to automatically set correct indentation settings for the generated project."
 
 project-carthage:
-	swift package generate-xcodeproj --output SwiftGRPC-Carthage.xcodeproj
+	swift package generate-xcodeproj --output SwiftGRPC-Carthage.xcodeproj --xcconfig-overrides base.xcconfig
 	@sed -i '' -e "s|$(PWD)|..|g" SwiftGRPC-Carthage.xcodeproj/project.pbxproj
 	@sed -i '' -e "s|$(PWD)|../../..|g" SwiftGRPC-Carthage.xcodeproj/GeneratedModuleMap/BoringSSL/module.modulemap
 	@ruby fix-project-settings.rb SwiftGRPC-Carthage.xcodeproj || echo "xcodeproj ('sudo gem install xcodeproj') is required in order to generate the Carthage-compatible project!"
@@ -50,10 +50,10 @@ xcodebuild: project
 		xcodebuild -project SwiftGRPC.xcodeproj -configuration "Debug" -parallelizeTargets -target SwiftGRPC -target Echo -target Simple -target protoc-gen-swiftgrpc build
 
 build-carthage:
-	carthage build -project SwiftGRPC-Carthage.xcodeproj --no-skip-current
+	carthage build --no-skip-current
 
 build-carthage-debug:
-	carthage build -project SwiftGRPC-Carthage.xcodeproj --no-skip-current --configuration Debug --platform iOS, macOS
+	carthage build --no-skip-current --configuration Debug --platform iOS, macOS
 
 clean:
 	-rm -rf Packages

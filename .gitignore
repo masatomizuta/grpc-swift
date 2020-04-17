@@ -16,4 +16,10 @@ third_party/**
 Examples/EchoWeb/dist
 Examples/EchoWeb/node_modules
 Examples/EchoWeb/package-lock.json
+<<<<<<< HEAD
+*.framework.zip
+node_modules
+*.lock
+=======
 .swiftpm
+>>>>>>> f4d5da3cd5d01e6a3fcf3db785c4f6731373c1d5

@@ -58,7 +58,6 @@
 #include <string.h>
 
 #include <openssl/asn1.h>
-#include <openssl/buf.h>
 #include <openssl/digest.h>
 #include <openssl/err.h>
 #include <openssl/mem.h>
@@ -315,7 +314,7 @@ ASN1_BIT_STRING *X509_get0_pubkey_bitstr(const X509 *x)
     return x->cert_info->key->public_key;
 }
 
-int X509_check_private_key(X509 *x, EVP_PKEY *k)
+int X509_check_private_key(X509 *x, const EVP_PKEY *k)
 {
     EVP_PKEY *xk;
     int ret;

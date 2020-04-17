@@ -76,7 +76,11 @@
 #include "internal.h"
 
 
-DEFINE_STATIC_EX_DATA_CLASS(g_rsa_ex_data_class);
+// RSA_R_BLOCK_TYPE_IS_NOT_02 is part of the legacy SSLv23 padding scheme.
+// Cryptography.io depends on this error code.
+OPENSSL_DECLARE_ERROR_REASON(RSA, BLOCK_TYPE_IS_NOT_02)
+
+DEFINE_STATIC_EX_DATA_CLASS(g_rsa_ex_data_class)
 
 RSA *RSA_new(void) { return RSA_new_method(NULL); }
 
@@ -805,6 +809,11 @@ int RSA_check_fips(RSA *key) {
   int ret = 1;
 
   // Perform partial public key validation of RSA keys (SP 800-89 5.3.3).
+  // Although this is not for primality testing, SP 800-89 cites an RSA
+  // primality testing algorithm, so we use |BN_prime_checks_for_generation| to
+  // match. This is only a plausibility test and we expect the value to be
+  // composite, so too few iterations will cause us to reject the key, not use
+  // an implausible one.
   enum bn_primality_result_t primality_result;
   if (BN_num_bits(key->e) <= 16 ||
       BN_num_bits(key->e) > 256 ||
@@ -813,7 +822,8 @@ int RSA_check_fips(RSA *key) {
       !BN_gcd(&small_gcd, key->n, g_small_factors(), ctx) ||
       !BN_is_one(&small_gcd) ||
       !BN_enhanced_miller_rabin_primality_test(&primality_result, key->n,
-                                               BN_prime_checks, ctx, NULL) ||
+                                               BN_prime_checks_for_generation,
+                                               ctx, NULL) ||
       primality_result != bn_non_prime_power_composite) {
     OPENSSL_PUT_ERROR(RSA, RSA_R_PUBLIC_KEY_VALIDATION_FAILED);
     ret = 0;

@@ -27,6 +27,13 @@
  *  - some syscalls to be made directly
  */
 
+/*
+ * Defines GRPC_USE_ABSL to use Abseil Common Libraries (C++)
+ */
+#ifndef GRPC_USE_ABSL
+#define GRPC_USE_ABSL 1
+#endif
+
 /* Get windows.h included everywhere (we need it) */
 #if defined(_WIN64) || defined(WIN64) || defined(_WIN32) || defined(WIN32)
 #ifndef WIN32_LEAN_AND_MEAN
@@ -186,6 +193,26 @@
 #else /* musl libc */
 #define GPR_MUSL_LIBC_COMPAT 1
 #endif
+#elif defined(__ASYLO__)
+#define GPR_ARCH_64 1
+#define GPR_CPU_POSIX 1
+#define GPR_GCC_TLS 1
+#define GPR_PLATFORM_STRING "asylo"
+#define GPR_GCC_SYNC 1
+#define GPR_POSIX_SYNC 1
+#define GPR_POSIX_STRING 1
+#define GPR_POSIX_LOG 1
+#define GPR_POSIX_TIME 1
+#define GPR_POSIX_ENV 1
+#define GPR_ASYLO 1
+#define GRPC_POSIX_SOCKET 1
+#define GRPC_POSIX_SOCKETADDR
+#define GRPC_POSIX_SOCKETUTILS 1
+#define GRPC_TIMER_USE_GENERIC 1
+#define GRPC_POSIX_NO_SPECIAL_WAKEUP_FD 1
+#define GRPC_POSIX_WAKEUP_FD 1
+#define GRPC_ARES 0
+#define GPR_NO_AUTODETECT_PLATFORM 1
 #elif defined(__APPLE__)
 #include <Availability.h>
 #include <TargetConditionals.h>
@@ -197,7 +224,7 @@
 #define GPR_CPU_IPHONE 1
 #define GPR_PTHREAD_TLS 1
 #define GRPC_CFSTREAM 1
-/* the c-ares resolver isnt safe to enable on iOS */
+/* the c-ares resolver isn't safe to enable on iOS */
 #define GRPC_ARES 0
 #else /* TARGET_OS_IPHONE */
 #define GPR_PLATFORM_STRING "osx"
@@ -463,6 +490,23 @@ typedef unsigned __int64 uint64_t;
 #include <stdint.h>
 #endif /* _MSC_VER */
 
+/* Type of cycle clock implementation */
+#ifdef GPR_LINUX
+/* Disable cycle clock by default.
+   TODO(soheil): enable when we support fallback for unstable cycle clocks.
+#if defined(__i386__)
+#define GPR_CYCLE_COUNTER_RDTSC_32 1
+#elif defined(__x86_64__) || defined(__amd64__)
+#define GPR_CYCLE_COUNTER_RDTSC_64 1
+#else
+#define GPR_CYCLE_COUNTER_FALLBACK 1
+#endif
+*/
+#define GPR_CYCLE_COUNTER_FALLBACK 1
+#else
+#define GPR_CYCLE_COUNTER_FALLBACK 1
+#endif /* GPR_LINUX */
+
 /* Cache line alignment */
 #ifndef GPR_CACHELINE_SIZE_LOG
 #if defined(__i386__) || defined(__x86_64__)
@@ -630,10 +674,14 @@ typedef unsigned __int64 uint64_t;
 
 /* GRPC_ALLOW_EXCEPTIONS should be 0 or 1 if exceptions are allowed or not */
 #ifndef GRPC_ALLOW_EXCEPTIONS
-/* If not already set, set to 1 on Windows (style guide standard) but to
- * 0 on non-Windows platforms unless the compiler defines __EXCEPTIONS */
 #ifdef GPR_WINDOWS
+#if defined(_MSC_VER) && defined(_CPPUNWIND)
 #define GRPC_ALLOW_EXCEPTIONS 1
+#elif defined(__EXCEPTIONS)
+#define GRPC_ALLOW_EXCEPTIONS 1
+#else
+#define GRPC_ALLOW_EXCEPTIONS 0
+#endif
 #else /* GPR_WINDOWS */
 #ifdef __EXCEPTIONS
 #define GRPC_ALLOW_EXCEPTIONS 1

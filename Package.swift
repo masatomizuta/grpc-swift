@@ -37,9 +37,15 @@ let package = Package(
         .target(name: "CgRPC",
                 dependencies: ["BoringSSL"],
                 cSettings: [
-                    .headerSearchPath("../BoringSSL/include"),
+                    .headerSearchPath("Sources/CgRPC/third_party/abseil-cpp"),
+                    .headerSearchPath("Sources/CgRPC/third_party/upb"),
+                    .headerSearchPath("Sources/CgRPC/src/core/ext/upb-generated"),
                     .unsafeFlags(["-Wno-module-import-in-extern-c"])],
-                linkerSettings: [.linkedLibrary("z")]),
+                linkerSettings: [
+                  .linkedLibrary("z"),
+                  .linkedLibrary("c++"),
+                  .linkedFramework("CoreFoundation")
+                ]),
         .target(name: "RootsEncoder"),
         .target(name: "protoc-gen-swiftgrpc",
                 dependencies: [

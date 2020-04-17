@@ -56,7 +56,6 @@
 
 #include <string.h>
 
-#include <openssl/buf.h>
 #include <openssl/mem.h>
 #include <openssl/obj.h>
 #include <openssl/stack.h>
@@ -106,7 +105,7 @@ static int int_x509_param_set_hosts(X509_VERIFY_PARAM_ID *id, int mode,
         id->hosts = NULL;
     }
 
-    copy = BUF_strndup(name, namelen);
+    copy = OPENSSL_strndup(name, namelen);
     if (copy == NULL)
         return 0;
 
@@ -345,7 +344,7 @@ static int int_x509_param_set1(char **pdest, size_t *pdestlen,
         return 0;
     }
 
-    tmp = BUF_memdup(src, srclen);
+    tmp = OPENSSL_memdup(src, srclen);
     if (!tmp) {
         return 0;
     }
@@ -362,7 +361,7 @@ int X509_VERIFY_PARAM_set1_name(X509_VERIFY_PARAM *param, const char *name)
 {
     if (param->name)
         OPENSSL_free(param->name);
-    param->name = BUF_strdup(name);
+    param->name = OPENSSL_strdup(name);
     if (param->name)
         return 1;
     return 0;
@@ -614,6 +613,7 @@ int X509_VERIFY_PARAM_add0_table(X509_VERIFY_PARAM *param)
     } else {
         size_t idx;
 
+        sk_X509_VERIFY_PARAM_sort(param_table);
         if (sk_X509_VERIFY_PARAM_find(param_table, &idx, param)) {
             ptmp = sk_X509_VERIFY_PARAM_value(param_table, idx);
             X509_VERIFY_PARAM_free(ptmp);
@@ -649,6 +649,7 @@ const X509_VERIFY_PARAM *X509_VERIFY_PARAM_lookup(const char *name)
     pm.name = (char *)name;
     if (param_table) {
         size_t idx;
+        sk_X509_VERIFY_PARAM_sort(param_table);
         if (sk_X509_VERIFY_PARAM_find(param_table, &idx, &pm))
             return sk_X509_VERIFY_PARAM_value(param_table, idx);
     }

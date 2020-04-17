@@ -56,6 +56,8 @@
 
 #include <openssl/bio.h>
 
+#if !defined(OPENSSL_TRUSTY)
+
 #include <assert.h>
 #include <errno.h>
 #include <string.h>
@@ -72,7 +74,6 @@ OPENSSL_MSVC_PRAGMA(warning(push, 3))
 OPENSSL_MSVC_PRAGMA(warning(pop))
 #endif
 
-#include <openssl/buf.h>
 #include <openssl/err.h>
 #include <openssl/mem.h>
 
@@ -147,7 +148,7 @@ static int split_host_and_port(char **out_host, char **out_port, const char *nam
     }
   }
 
-  *out_host = BUF_strndup(host, host_len);
+  *out_host = OPENSSL_strndup(host, host_len);
   if (*out_host == NULL) {
     return 0;
   }
@@ -427,13 +428,13 @@ static long conn_ctrl(BIO *bio, int cmd, long num, void *ptr) {
         bio->init = 1;
         if (num == 0) {
           OPENSSL_free(data->param_hostname);
-          data->param_hostname = BUF_strdup(ptr);
+          data->param_hostname = OPENSSL_strdup(ptr);
           if (data->param_hostname == NULL) {
             ret = 0;
           }
         } else if (num == 1) {
           OPENSSL_free(data->param_port);
-          data->param_port = BUF_strdup(ptr);
+          data->param_port = OPENSSL_strdup(ptr);
           if (data->param_port == NULL) {
             ret = 0;
           }
@@ -540,3 +541,5 @@ int BIO_set_nbio(BIO *bio, int on) {
 int BIO_do_connect(BIO *bio) {
   return BIO_ctrl(bio, BIO_C_DO_STATE_MACHINE, 0, NULL);
 }
+
+#endif  // OPENSSL_TRUSTY
