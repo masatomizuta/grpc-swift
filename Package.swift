@@ -37,9 +37,9 @@ let package = Package(
         .target(name: "CgRPC",
                 dependencies: ["BoringSSL"],
                 cSettings: [
-                    .headerSearchPath("Sources/CgRPC/third_party/abseil-cpp"),
-                    .headerSearchPath("Sources/CgRPC/third_party/upb"),
-                    .headerSearchPath("Sources/CgRPC/src/core/ext/upb-generated"),
+                    .headerSearchPath("../CgRPC/third_party/abseil-cpp"),
+                    .headerSearchPath("../CgRPC/third_party/upb"),
+                    .headerSearchPath("../CgRPC/src/core/ext/upb-generated"),
                     .unsafeFlags(["-Wno-module-import-in-extern-c"])],
                 linkerSettings: [
                   .linkedLibrary("z"),
